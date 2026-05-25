@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Leva Estratégias</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
+<body class="bg-gray-100">
+
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-4 text-center">CRM Leva Estratégias</h1>
+
+    <!-- CONFIGURAÇÕES -->
+    <div class="bg-white p-4 rounded shadow mb-6">
+      <h2 class="text-xl font-semibold mb-3">Configurações do CRM</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div>
+          <label class="text-sm font-medium">Perfil de Acesso</label>
+          <select id="profileSelect" class="w-full border rounded p-2">
+            <option value="simple">Consultor de Vendas</option>
+            <option value="advanced">CEO / Financeiro</option>
+            <option value="top">Gestor de Tráfego</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-sm font-medium">Código DDD/Nicho</label>
+          <input id="nicheInput" placeholder="+55" class="w-full border rounded p-2">
+        </div>
+
+        <button onclick="applySettings()" class="bg-indigo-600 text-white px-4 py-2 rounded self-end">
+          Aplicar
+        </button>
+      </div>
+
+    </div>
+
+    <!-- FORM DE LEAD -->
+    <div class="bg-white p-4 rounded shadow mb-6">
+      <h2 class="text-lg font-semibold mb-2">Adicionar Lead</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <input id="leadName" placeholder="Nome" class="border p-2 rounded">
+        <input id="leadEmail" placeholder="Email" class="border p-2 rounded">
+        <input id="leadPhone" placeholder="Telefone" class="border p-2 rounded">
+
+        <button onclick="addLead()" class="bg-green-600 text-white px-4 py-2 rounded">
+          Adicionar
+        </button>
+      </div>
+    </div>
+
+    <!-- TABELA -->
+    <div class="bg-white rounded shadow overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3">Nome</th>
+            <th class="px-6 py-3">Email</th>
+            <th class="px-6 py-3">Telefone</th>
+            <th class="px-6 py-3">IA</th>
+            <th class="px-6 py-3">WhatsApp</th>
+          </tr>
+        </thead>
+
+        <tbody id="leadsTableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+<script>
+
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiTCmCPeeYS8kPYTYcWQfI9tuhLFsiFg1t6Ch7MCrME0fKAhsNHp5R8lrEGa7Opgpx/exec";
+
+let leads = [];
+let currentProfile = "simple";
+let nichePhone = "";
+
+async function loadLeads() {
+  try {
+    const response = await fetch(APPS_SCRIPT_URL);
+    leads = await response.json();
+  } catch (e) {
+    leads = [];
+  }
+  renderLeads();
+}
+
+async function saveLead(lead) {
+  leads.push(lead);
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(lead)
+    });
+  } catch (e) {
+    console.log("Erro ao salvar lead", e);
+  }
+
+  renderLeads();
+}
+
+function addLead() {
+  const name = leadName.value;
+  const email = leadEmail.value;
+  const phone = leadPhone.value;
+
+  const lead = {
+    ID: Date.now().toString(),
+    Nome: name,
+    Email: email,
+    Telefone: phone,
+    Nicho: "Geral",
+    Status_IA: "ATIVO",
+    Link_WhatsApp: "",
+    Data_Entrada: new Date().toISOString(),
+    Etapa_Funil: "Novo Lead",
+    Origem: "Manual",
+    UTM_Source: "",
+    UTM_Medium: "",
+    UTM_Campaign: "",
+    Anotações: ""
+  };
+
+  saveLead(lead);
+}
+
+function applySettings() {
+  currentProfile = document.getElementById("profileSelect").value;
+  nichePhone = document.getElementById("nicheInput").value;
+}
+
+function getWhats(phone) {
+  let cleaned = phone.replace(/\D/g, "");
+  return "https://wa.me/" + cleaned;
+}
+
+function renderLeads() {
+  const tbody = document.getElementById("leadsTableBody");
+  tbody.innerHTML = "";
+
+  leads.forEach(lead => {
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td class="px-6 py-3">${lead.Nome}</td>
+      <td class="px-6 py-3">${lead.Email}</td>
+      <td class="px-6 py-3">${lead.Telefone}</td>
+
+      <td class="px-6 py-3">
+        <input type="checkbox" ${lead.Status_IA === "ATIVO" ? "checked" : ""}>
+      </td>
+
+      <td class="px-6 py-3">
+        <a href="${getWhats(lead.Telefone)}" target="_blank" class="text-green-600 underline">
+          Abrir
+        </a>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+loadLeads();
+
+</script>
+</body>
+</html>
