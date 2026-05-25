@@ -139,8 +139,8 @@ function applySettings() {
 }
 
 function getWhats(phone) {
-  let cleaned = phone.replace(/\D/g, "");
-  return "https://wa.me/" + cleaned;
+  phone = String(phone).replace(/\D/g, '');
+  return "https://wa.me/" + phone;
 }
 
 function renderLeads() {
