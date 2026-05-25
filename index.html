@@ -148,6 +148,7 @@ function renderLeads() {
   tbody.innerHTML = "";
 
   leads.forEach(lead => {
+  lead.Telefone = String(lead.Telefone);
 
     const tr = document.createElement("tr");
 
