@@ -1,179 +1,313 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Leva Estratégias</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Dark Mode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-deep-gray { background-color: #161b22; }
+        .bg-card-gray { background-color: #1c2128; }
+        .border-gray { border-color: #30363d; }
+        .text-yellow { color: #f5c518; }
+        .text-blue { color: #58a6ff; }
+        .accent-yellow { background-color: #f5c518; color: #0d1117; }
+        .accent-blue { background-color: #58a6ff; color: #0d1117; }
+        .btn-yellow { background-color: #f5c518; color: #0d1117; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; transition: 0.3s; }
+        .btn-yellow:hover { background-color: #e2b714; }
+        .btn-blue { background-color: #58a6ff; color: #0d1117; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; transition: 0.3s; }
+        .btn-blue:hover { background-color: #4a90e2; }
+        .table-header { background-color: #1c2128; }
+        .table-row { background-color: #161b22; border-bottom: 1px solid #30363d; }
+        .modal-bg { background-color: #1c2128; border: 1px solid #30363d; }
+        .nav-item { padding: 0.75rem 1.5rem; border-radius: 0.375rem; transition: 0.3s; cursor: pointer; }
+        .nav-item.active { background-color: #f5c518; color: #0d1117; font-weight: 600; }
+        .nav-item:hover:not(.active) { background-color: #30363d; }
+    </style>
 </head>
+<body>
+    <!-- Navbar Top -->
+    <nav class="bg-deep-gray border-b border-gray px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <span class="text-yellow text-2xl font-bold">CRM</span>
+            <div class="flex space-x-2">
+                <span class="nav-item active" onclick="showPage('leads')">Leads</span>
+                <span class="nav-item" onclick="showPage('relatorios')">Relatórios</span>
+                <span class="nav-item" onclick="showPage('configuracoes')">Configurações</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-400">Bem-vindo</span>
+            <div class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold">U</div>
+        </div>
+    </nav>
 
-<body class="bg-gray-100">
+    <!-- Main Content -->
+    <div class="p-6">
+        <!-- Página Leads -->
+        <div id="page-leads">
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-card-gray rounded-lg p-4 border border-gray">
+                    <p class="text-gray-400 text-sm">Total Leads</p>
+                    <p class="text-2xl font-bold" id="totalLeads">0</p>
+                </div>
+                <div class="bg-card-gray rounded-lg p-4 border border-gray">
+                    <p class="text-gray-400 text-sm">Novos (mês)</p>
+                    <p class="text-2xl font-bold text-yellow" id="newLeads">0</p>
+                </div>
+                <div class="bg-card-gray rounded-lg p-4 border border-gray">
+                    <p class="text-gray-400 text-sm">Convertidos</p>
+                    <p class="text-2xl font-bold text-blue" id="convertedLeads">0</p>
+                </div>
+                <div class="bg-card-gray rounded-lg p-4 border border-gray">
+                    <p class="text-gray-400 text-sm">Taxa de Conversão</p>
+                    <p class="text-2xl font-bold" id="conversionRate">0%</p>
+                </div>
+            </div>
 
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-4 text-center">CRM Leva Estratégias</h1>
-
-    <!-- CONFIGURAÇÕES -->
-    <div class="bg-white p-4 rounded shadow mb-6">
-      <h2 class="text-xl font-semibold mb-3">Configurações do CRM</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-        <div>
-          <label class="text-sm font-medium">Perfil de Acesso</label>
-          <select id="profileSelect" class="w-full border rounded p-2">
-            <option value="simple">Consultor de Vendas</option>
-            <option value="advanced">CEO / Financeiro</option>
-            <option value="top">Gestor de Tráfego</option>
-          </select>
+            <!-- Tabela Premium -->
+            <div class="bg-card-gray rounded-lg border border-gray overflow-hidden">
+                <div class="flex justify-between items-center px-6 py-4 border-b border-gray">
+                    <h2 class="text-lg font-semibold">Leads</h2>
+                    <button class="btn-yellow" onclick="openAddModal()">+ Adicionar Lead</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="table-header text-sm text-gray-400">
+                            <tr>
+                                <th class="px-6 py-3">Nome</th>
+                                <th class="px-6 py-3">Email</th>
+                                <th class="px-6 py-3">Telefone</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3">Data</th>
+                                <th class="px-6 py-3">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsTableBody">
+                            <!-- preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <div>
-          <label class="text-sm font-medium">Código DDD/Nicho</label>
-          <input id="nicheInput" placeholder="+55" class="w-full border rounded p-2">
+        <!-- Página Relatórios (placeholder) -->
+        <div id="page-relatorios" class="hidden">
+            <div class="bg-card-gray rounded-lg p-6 border border-gray">
+                <h2 class="text-xl font-semibold mb-4">Relatórios</h2>
+                <p class="text-gray-400">Conteúdo em breve.</p>
+            </div>
         </div>
 
-        <button onclick="applySettings()" class="bg-indigo-600 text-white px-4 py-2 rounded self-end">
-          Aplicar
-        </button>
-      </div>
-
+        <!-- Página Configurações (placeholder) -->
+        <div id="page-configuracoes" class="hidden">
+            <div class="bg-card-gray rounded-lg p-6 border border-gray">
+                <h2 class="text-xl font-semibold mb-4">Configurações</h2>
+                <p class="text-gray-400">Conteúdo em breve.</p>
+            </div>
+        </div>
     </div>
 
-    <!-- FORM DE LEAD -->
-    <div class="bg-white p-4 rounded shadow mb-6">
-      <h2 class="text-lg font-semibold mb-2">Adicionar Lead</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-        <input id="leadName" placeholder="Nome" class="border p-2 rounded">
-        <input id="leadEmail" placeholder="Email" class="border p-2 rounded">
-        <input id="leadPhone" placeholder="Telefone" class="border p-2 rounded">
-
-        <button onclick="addLead()" class="bg-green-600 text-white px-4 py-2 rounded">
-          Adicionar
-        </button>
-      </div>
+    <!-- Modal Adicionar/Editar Lead -->
+    <div id="leadModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+        <div class="modal-bg rounded-lg w-full max-w-md p-6 mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold" id="modalTitle">Adicionar Lead</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <form id="leadForm">
+                <input type="hidden" id="leadId" value="">
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-1">Nome</label>
+                    <input type="text" id="leadName" class="w-full bg-deep-gray border border-gray rounded px-3 py-2 text-white focus:outline-none focus:border-yellow" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-1">Email</label>
+                    <input type="email" id="leadEmail" class="w-full bg-deep-gray border border-gray rounded px-3 py-2 text-white focus:outline-none focus:border-yellow" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-1">Telefone</label>
+                    <input type="text" id="leadPhone" class="w-full bg-deep-gray border border-gray rounded px-3 py-2 text-white focus:outline-none focus:border-yellow" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-1">Status</label>
+                    <select id="leadStatus" class="w-full bg-deep-gray border border-gray rounded px-3 py-2 text-white focus:outline-none focus:border-yellow">
+                        <option>Novo</option>
+                        <option>Contatado</option>
+                        <option>Qualificado</option>
+                        <option>Convertido</option>
+                        <option>Perdido</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal()" class="btn-blue">Cancelar</button>
+                    <button type="submit" class="btn-yellow">Salvar</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- TABELA -->
-    <div class="bg-white rounded shadow overflow-x-auto">
-      <table class="min-w-full">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3">Nome</th>
-            <th class="px-6 py-3">Email</th>
-            <th class="px-6 py-3">Telefone</th>
-            <th class="px-6 py-3">IA</th>
-            <th class="px-6 py-3">WhatsApp</th>
-          </tr>
-        </thead>
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz.../exec'; // Substitua pela sua URL
 
-        <tbody id="leadsTableBody"></tbody>
-      </table>
-    </div>
+        let leads = [];
 
-  </div>
+        function showPage(page) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('page-' + page).classList.remove('hidden');
+            document.querySelector('.nav-item[onclick*="' + page + '"]').classList.add('active');
+        }
 
-<script>
+        async function loadLeads() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + '?action=getLeads');
+                const data = await response.json();
+                if (data.success) {
+                    leads = data.leads || [];
+                    updateMetrics();
+                    renderLeads();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar leads:', error);
+            }
+        }
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiTCmCPeeYS8kPYTYcWQfI9tuhLFsiFg1t6Ch7MCrME0fKAhsNHp5R8lrEGa7Opgpx/exec";
+        function renderLeads() {
+            const tbody = document.getElementById('leadsTableBody');
+            tbody.innerHTML = '';
+            leads.forEach(lead => {
+                const tr = document.createElement('tr');
+                tr.className = 'table-row hover:bg-gray-700';
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium">${lead.nome}</td>
+                    <td class="px-6 py-4">${lead.email}</td>
+                    <td class="px-6 py-4">${lead.telefone}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-semibold ${getStatusClass(lead.status)}">${lead.status}</span></td>
+                    <td class="px-6 py-4">${lead.data ? new Date(lead.data).toLocaleDateString('pt-BR') : ''}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="editLead('${lead.id}')" class="text-blue hover:underline mr-2">Editar</button>
+                        <button onclick="deleteLead('${lead.id}')" class="text-red-500 hover:underline">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-let leads = [];
-let currentProfile = "simple";
-let nichePhone = "";
+        function getStatusClass(status) {
+            const map = {
+                'Novo': 'bg-blue-100 text-blue-800',
+                'Contatado': 'bg-yellow-100 text-yellow-800',
+                'Qualificado': 'bg-green-100 text-green-800',
+                'Convertido': 'bg-purple-100 text-purple-800',
+                'Perdido': 'bg-red-100 text-red-800'
+            };
+            return map[status] || 'bg-gray-100 text-gray-800';
+        }
 
-async function loadLeads() {
-  try {
-    const response = await fetch(APPS_SCRIPT_URL);
-    leads = await response.json();
-  } catch (e) {
-    leads = [];
-  }
-  renderLeads();
-}
+        async function addLead(lead) {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + '?action=addLead', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(lead)
+                });
+                await loadLeads();
+            } catch (error) {
+                console.error('Erro ao adicionar lead:', error);
+            }
+        }
 
-async function saveLead(lead) {
-  leads.push(lead);
+        async function updateLead(id, lead) {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + '?action=updateLead&id=' + id, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(lead)
+                });
+                await loadLeads();
+            } catch (error) {
+                console.error('Erro ao atualizar lead:', error);
+            }
+        }
 
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(lead)
-    });
-  } catch (e) {
-    console.log("Erro ao salvar lead", e);
-  }
+        async function deleteLead(id) {
+            if (!confirm('Tem certeza que deseja excluir este lead?')) return;
+            try {
+                await fetch(APPS_SCRIPT_URL + '?action=deleteLead&id=' + id, { method: 'POST', mode: 'no-cors' });
+                await loadLeads();
+            } catch (error) {
+                console.error('Erro ao excluir lead:', error);
+            }
+        }
 
-  renderLeads();
-}
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Adicionar Lead';
+            document.getElementById('leadId').value = '';
+            document.getElementById('leadForm').reset();
+            document.getElementById('leadModal').classList.remove('hidden');
+        }
 
-function addLead() {
-  const name = leadName.value;
-  const email = leadEmail.value;
-  const phone = leadPhone.value;
+        function editLead(id) {
+            const lead = leads.find(l => l.id === id);
+            if (!lead) return;
+            document.getElementById('modalTitle').textContent = 'Editar Lead';
+            document.getElementById('leadId').value = lead.id;
+            document.getElementById('leadName').value = lead.nome;
+            document.getElementById('leadEmail').value = lead.email;
+            document.getElementById('leadPhone').value = lead.telefone;
+            document.getElementById('leadStatus').value = lead.status;
+            document.getElementById('leadModal').classList.remove('hidden');
+        }
 
-  const lead = {
-    ID: Date.now().toString(),
-    Nome: name,
-    Email: email,
-    Telefone: phone,
-    Nicho: "Geral",
-    Status_IA: "ATIVO",
-    Link_WhatsApp: "",
-    Data_Entrada: new Date().toISOString(),
-    Etapa_Funil: "Novo Lead",
-    Origem: "Manual",
-    UTM_Source: "",
-    UTM_Medium: "",
-    UTM_Campaign: "",
-    Anotações: ""
-  };
+        function closeModal() {
+            document.getElementById('leadModal').classList.add('hidden');
+        }
 
-  saveLead(lead);
-}
+        document.getElementById('leadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('leadId').value;
+            const lead = {
+                nome: document.getElementById('leadName').value,
+                email: document.getElementById('leadEmail').value,
+                telefone: document.getElementById('leadPhone').value,
+                status: document.getElementById('leadStatus').value
+            };
+            if (id) {
+                await updateLead(id, lead);
+            } else {
+                await addLead(lead);
+            }
+            closeModal();
+        });
 
-function applySettings() {
-  currentProfile = document.getElementById("profileSelect").value;
-  nichePhone = document.getElementById("nicheInput").value;
-}
+        function updateMetrics() {
+            const total = leads.length;
+            const now = new Date();
+            const month = now.getMonth();
+            const year = now.getFullYear();
+            const newLeads = leads.filter(l => {
+                const d = new Date(l.data);
+                return d.getMonth() === month && d.getFullYear() === year;
+            }).length;
+            const converted = leads.filter(l => l.status === 'Convertido').length;
+            const conversionRate = total ? ((converted / total) * 100).toFixed(1) + '%' : '0%';
+            document.getElementById('totalLeads').textContent = total;
+            document.getElementById('newLeads').textContent = newLeads;
+            document.getElementById('convertedLeads').textContent = converted;
+            document.getElementById('conversionRate').textContent = conversionRate;
+        }
 
-function getWhats(phone) {
-  phone = String(phone).replace(/\D/g, '');
-  return "https://wa.me/" + phone;
-}
-
-function renderLeads() {
-  const tbody = document.getElementById("leadsTableBody");
-  tbody.innerHTML = "";
-
-  leads.forEach(lead => {
-  lead.Telefone = String(lead.Telefone);
-
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td class="px-6 py-3">${lead.Nome}</td>
-      <td class="px-6 py-3">${lead.Email}</td>
-      <td class="px-6 py-3">${lead.Telefone}</td>
-
-      <td class="px-6 py-3">
-        <input type="checkbox" ${lead.Status_IA === "ATIVO" ? "checked" : ""}>
-      </td>
-
-      <td class="px-6 py-3">
-        <a href="${getWhats(lead.Telefone)}" target="_blank" class="text-green-600 underline">
-          Abrir
-        </a>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-  });
-}
-
-loadLeads();
-
-</script>
+        // Inicializar
+        loadLeads();
+    </script>
 </body>
 </html>
